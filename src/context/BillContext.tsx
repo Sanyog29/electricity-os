@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode, useMemo } from 'react';
 import { fetchUserBills, saveBillToDatabase, deleteBill as deleteBillFromDb, BillRecord, CreateBillInput } from '@/lib/supabase/bills';
 import { isDemoMode } from '@/lib/supabase/client';
 
@@ -25,6 +25,32 @@ export interface StoredBill {
     };
 }
 
+// Analytics types
+export interface MonthlyTrendPoint {
+    name: string;
+    value: number;
+    cost: number;
+}
+
+export interface SiteComparisonPoint {
+    name: string;
+    value: number;
+    value2?: number;
+    color?: string;
+    [key: string]: string | number | undefined;
+}
+
+export interface SiteAnalytics {
+    siteId: string;
+    siteName: string;
+    totalCost: number;
+    totalConsumption: number;
+    billCount: number;
+    avgPowerFactor: number;
+    potentialSavings: number;
+    trend: 'up' | 'down' | 'stable';
+}
+
 interface BillContextType {
     bills: StoredBill[];
     loading: boolean;
@@ -36,6 +62,12 @@ interface BillContextType {
     totalSavings: number;
     totalConsumption: number;
     totalCost: number;
+    // Analytics functions
+    getMonthlyTrend: () => MonthlyTrendPoint[];
+    getSiteComparison: () => SiteComparisonPoint[];
+    getCostBySite: () => SiteComparisonPoint[];
+    getSiteAnalytics: () => SiteAnalytics[];
+    getUniqueSites: () => string[];
 }
 
 const BillContext = createContext<BillContextType | undefined>(undefined);
@@ -150,6 +182,135 @@ export function BillProvider({ children }: { children: ReactNode }) {
     const totalConsumption = bills.reduce((sum, b) => sum + b.unitsConsumed, 0);
     const totalCost = bills.reduce((sum, b) => sum + b.totalAmount, 0);
 
+    // Analytics functions with memoization
+    const getUniqueSites = useMemo(() => () => {
+        const sites = new Set(bills.map(b => b.site));
+        return Array.from(sites);
+    }, [bills]);
+
+    const getMonthlyTrend = useMemo(() => (): MonthlyTrendPoint[] => {
+        // Group bills by month
+        const monthlyData = new Map<string, { consumption: number; cost: number }>();
+
+        bills.forEach(bill => {
+            const key = bill.month;
+            const existing = monthlyData.get(key) || { consumption: 0, cost: 0 };
+            monthlyData.set(key, {
+                consumption: existing.consumption + bill.unitsConsumed,
+                cost: existing.cost + bill.totalAmount
+            });
+        });
+
+        // Sort by month and return last 6 months
+        return Array.from(monthlyData.entries())
+            .map(([name, data]) => ({
+                name,
+                value: data.consumption,
+                cost: data.cost
+            }))
+            .sort((a, b) => a.name.localeCompare(b.name))
+            .slice(-6);
+    }, [bills]);
+
+    const getSiteComparison = useMemo(() => (): SiteComparisonPoint[] => {
+        const siteData = new Map<string, { consumption: number; cost: number }>();
+
+        bills.forEach(bill => {
+            const existing = siteData.get(bill.site) || { consumption: 0, cost: 0 };
+            siteData.set(bill.site, {
+                consumption: existing.consumption + bill.unitsConsumed,
+                cost: existing.cost + bill.totalAmount
+            });
+        });
+
+        const colors = ['#0ea5e9', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444', '#06b6d4'];
+        return Array.from(siteData.entries())
+            .map(([name, data], index) => ({
+                name,
+                value: data.consumption,
+                value2: data.cost,
+                color: colors[index % colors.length]
+            }))
+            .sort((a, b) => b.value - a.value);
+    }, [bills]);
+
+    const getCostBySite = useMemo(() => (): SiteComparisonPoint[] => {
+        const siteData = new Map<string, number>();
+
+        bills.forEach(bill => {
+            const existing = siteData.get(bill.site) || 0;
+            siteData.set(bill.site, existing + bill.totalAmount);
+        });
+
+        const colors = ['#0ea5e9', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444', '#06b6d4'];
+        return Array.from(siteData.entries())
+            .map(([name, value], index) => ({
+                name,
+                value,
+                color: colors[index % colors.length]
+            }))
+            .sort((a, b) => b.value - a.value);
+    }, [bills]);
+
+    const getSiteAnalytics = useMemo(() => (): SiteAnalytics[] => {
+        const siteMap = new Map<string, {
+            bills: StoredBill[];
+            totalCost: number;
+            totalConsumption: number;
+            totalPF: number;
+            pfCount: number;
+            potentialSavings: number;
+        }>();
+
+        bills.forEach(bill => {
+            const existing = siteMap.get(bill.site) || {
+                bills: [],
+                totalCost: 0,
+                totalConsumption: 0,
+                totalPF: 0,
+                pfCount: 0,
+                potentialSavings: 0
+            };
+
+            existing.bills.push(bill);
+            existing.totalCost += bill.totalAmount;
+            existing.totalConsumption += bill.unitsConsumed;
+            existing.potentialSavings += bill.insights.potentialSavings;
+
+            if (bill.powerFactor) {
+                existing.totalPF += bill.powerFactor;
+                existing.pfCount += 1;
+            }
+
+            siteMap.set(bill.site, existing);
+        });
+
+        return Array.from(siteMap.entries()).map(([siteName, data]) => {
+            // Determine trend based on last 2 bills
+            const sortedBills = data.bills.sort((a, b) =>
+                a.month.localeCompare(b.month)
+            );
+            let trend: 'up' | 'down' | 'stable' = 'stable';
+            if (sortedBills.length >= 2) {
+                const last = sortedBills[sortedBills.length - 1].totalAmount;
+                const prev = sortedBills[sortedBills.length - 2].totalAmount;
+                if (last > prev * 1.05) trend = 'up';
+                else if (last < prev * 0.95) trend = 'down';
+            }
+
+            return {
+                siteId: siteName.toLowerCase().replace(/\s+/g, '-'),
+                siteName,
+                totalCost: data.totalCost,
+                totalConsumption: data.totalConsumption,
+                billCount: data.bills.length,
+                avgPowerFactor: data.pfCount > 0 ? data.totalPF / data.pfCount : 0,
+                potentialSavings: data.potentialSavings,
+                trend
+            };
+        }).sort((a, b) => b.totalCost - a.totalCost);
+    }, [bills]);
+
     return (
         <BillContext.Provider value={{
             bills,
@@ -162,6 +323,11 @@ export function BillProvider({ children }: { children: ReactNode }) {
             totalSavings,
             totalConsumption,
             totalCost,
+            getMonthlyTrend,
+            getSiteComparison,
+            getCostBySite,
+            getSiteAnalytics,
+            getUniqueSites,
         }}>
             {children}
         </BillContext.Provider>

@@ -3,21 +3,34 @@
 import Link from 'next/link';
 import {
   TrendingUp,
+  TrendingDown,
   IndianRupee,
   Zap,
   Building2,
   PlusCircle,
   FileText,
   Upload,
-  Calendar,
   AlertTriangle,
   CheckCircle2,
-  Eye
+  Eye,
+  Activity,
+  BarChart3
 } from 'lucide-react';
 import { useBills } from '@/context';
+import { AreaChart, BarChart, PieChart } from '@/components/charts';
 
 export default function DashboardPage() {
-  const { bills, totalSavings, totalConsumption, totalCost } = useBills();
+  const {
+    bills,
+    totalSavings,
+    totalConsumption,
+    totalCost,
+    getMonthlyTrend,
+    getSiteComparison,
+    getCostBySite,
+    getSiteAnalytics
+  } = useBills();
+
   const hasBills = bills.length > 0;
 
   // Get recent bills (last 5)
@@ -25,6 +38,15 @@ export default function DashboardPage() {
 
   // Calculate alerts
   const alerts = bills.filter(b => b.insights.riskLevel === 'high' || b.insights.riskLevel === 'medium');
+
+  // Get analytics data
+  const monthlyTrend = getMonthlyTrend();
+  const siteComparison = getSiteComparison();
+  const costBySite = getCostBySite();
+  const siteAnalytics = getSiteAnalytics();
+
+  // Check if we have multiple sites
+  const hasMultipleSites = siteAnalytics.length > 1;
 
   return (
     <div className="dashboard">
@@ -124,61 +146,172 @@ export default function DashboardPage() {
           </div>
         </div>
       ) : (
-        /* Dashboard with data */
-        <div className="dashboard-grid">
-          {/* Recent Bills */}
-          <div className="card recent-bills-card">
-            <div className="card-header">
-              <h3>Recent Bills</h3>
-              <Link href="/bills" className="view-all-link">View all</Link>
+        <>
+          {/* Charts Section */}
+          <div className="charts-section">
+            {/* Consumption Trend Chart */}
+            <div className="card chart-card">
+              <div className="card-header">
+                <div className="card-header-left">
+                  <Activity size={18} className="card-header-icon" />
+                  <h3>Consumption Trend</h3>
+                </div>
+              </div>
+              <div className="chart-wrapper">
+                <AreaChart
+                  data={monthlyTrend}
+                  height={280}
+                  formatValue={(v) => `${(v / 1000).toFixed(1)}k`}
+                />
+              </div>
             </div>
-            <div className="bills-list">
-              {recentBills.map((bill) => (
-                <Link key={bill.id} href={`/bills/${bill.id}`} className="bill-item">
-                  <div className="bill-icon">
-                    <FileText size={18} />
-                  </div>
-                  <div className="bill-info">
-                    <div className="bill-site">{bill.site}</div>
-                    <div className="bill-meta">{bill.month}</div>
-                  </div>
-                  <div className="bill-amount">₹{bill.totalAmount.toLocaleString()}</div>
-                  <Eye size={16} className="bill-action" />
-                </Link>
-              ))}
+
+            {/* Cost Distribution Pie Chart */}
+            <div className="card chart-card">
+              <div className="card-header">
+                <div className="card-header-left">
+                  <IndianRupee size={18} className="card-header-icon" />
+                  <h3>Cost Distribution</h3>
+                </div>
+              </div>
+              <div className="chart-wrapper pie-wrapper">
+                <PieChart
+                  data={costBySite}
+                  height={280}
+                  formatValue={(v) => `₹${v.toLocaleString()}`}
+                  showLegend={true}
+                />
+              </div>
             </div>
           </div>
 
-          {/* Alerts & Insights */}
-          <div className="card alerts-card">
-            <div className="card-header">
-              <h3>Alerts & Insights</h3>
-            </div>
-            {alerts.length === 0 ? (
-              <div className="no-alerts">
-                <CheckCircle2 size={32} />
-                <p>All bills looking good!</p>
+          {/* Site Comparison Bar Chart - Only show if multiple sites */}
+          {hasMultipleSites && (
+            <div className="card chart-card full-width">
+              <div className="card-header">
+                <div className="card-header-left">
+                  <BarChart3 size={18} className="card-header-icon" />
+                  <h3>Site Comparison</h3>
+                </div>
+                <span className="card-subtitle">Consumption (kWh) by site</span>
               </div>
-            ) : (
-              <div className="alerts-list">
-                {alerts.slice(0, 3).map((bill) => (
-                  <div key={bill.id} className={`alert-item ${bill.insights.riskLevel}`}>
-                    <AlertTriangle size={18} />
-                    <div className="alert-content">
-                      <div className="alert-title">{bill.site} needs attention</div>
-                      <div className="alert-desc">
-                        Potential savings: ₹{bill.insights.potentialSavings.toLocaleString()}
+              <div className="chart-wrapper">
+                <BarChart
+                  data={siteComparison}
+                  height={300}
+                  formatValue={(v) => `${v.toLocaleString()} kWh`}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Site Analytics Cards */}
+          {hasMultipleSites && (
+            <div className="site-analytics-section">
+              <h3 className="section-title">Site Analytics</h3>
+              <div className="site-cards-grid">
+                {siteAnalytics.map((site) => (
+                  <div key={site.siteId} className="card site-analytics-card">
+                    <div className="site-card-header">
+                      <div className="site-name-row">
+                        <Building2 size={18} />
+                        <h4>{site.siteName}</h4>
+                      </div>
+                      <div className={`trend-badge ${site.trend}`}>
+                        {site.trend === 'up' && <TrendingUp size={14} />}
+                        {site.trend === 'down' && <TrendingDown size={14} />}
+                        {site.trend === 'stable' && <Activity size={14} />}
+                        <span>{site.trend}</span>
                       </div>
                     </div>
-                    <Link href={`/bills/${bill.id}`} className="btn btn-ghost btn-sm">
-                      View
-                    </Link>
+                    <div className="site-stats">
+                      <div className="site-stat">
+                        <span className="stat-label">Total Cost</span>
+                        <span className="stat-value">₹{site.totalCost.toLocaleString()}</span>
+                      </div>
+                      <div className="site-stat">
+                        <span className="stat-label">Consumption</span>
+                        <span className="stat-value">{site.totalConsumption.toLocaleString()} kWh</span>
+                      </div>
+                      <div className="site-stat">
+                        <span className="stat-label">Bills</span>
+                        <span className="stat-value">{site.billCount}</span>
+                      </div>
+                      {site.avgPowerFactor > 0 && (
+                        <div className="site-stat">
+                          <span className="stat-label">Avg PF</span>
+                          <span className="stat-value">{site.avgPowerFactor.toFixed(2)}</span>
+                        </div>
+                      )}
+                    </div>
+                    {site.potentialSavings > 0 && (
+                      <div className="site-savings">
+                        <TrendingUp size={14} />
+                        <span>₹{site.potentialSavings.toLocaleString()} potential savings</span>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
-            )}
+            </div>
+          )}
+
+          {/* Dashboard Grid - Recent Bills & Alerts */}
+          <div className="dashboard-grid">
+            {/* Recent Bills */}
+            <div className="card recent-bills-card">
+              <div className="card-header">
+                <h3>Recent Bills</h3>
+                <Link href="/bills" className="view-all-link">View all</Link>
+              </div>
+              <div className="bills-list">
+                {recentBills.map((bill) => (
+                  <Link key={bill.id} href={`/bills/${bill.id}`} className="bill-item">
+                    <div className="bill-icon">
+                      <FileText size={18} />
+                    </div>
+                    <div className="bill-info">
+                      <div className="bill-site">{bill.site}</div>
+                      <div className="bill-meta">{bill.month}</div>
+                    </div>
+                    <div className="bill-amount">₹{bill.totalAmount.toLocaleString()}</div>
+                    <Eye size={16} className="bill-action" />
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            {/* Alerts & Insights */}
+            <div className="card alerts-card">
+              <div className="card-header">
+                <h3>Alerts & Insights</h3>
+              </div>
+              {alerts.length === 0 ? (
+                <div className="no-alerts">
+                  <CheckCircle2 size={32} />
+                  <p>All bills looking good!</p>
+                </div>
+              ) : (
+                <div className="alerts-list">
+                  {alerts.slice(0, 3).map((bill) => (
+                    <div key={bill.id} className={`alert-item ${bill.insights.riskLevel}`}>
+                      <AlertTriangle size={18} />
+                      <div className="alert-content">
+                        <div className="alert-title">{bill.site} needs attention</div>
+                        <div className="alert-desc">
+                          Potential savings: ₹{bill.insights.potentialSavings.toLocaleString()}
+                        </div>
+                      </div>
+                      <Link href={`/bills/${bill.id}`} className="btn btn-ghost btn-sm">
+                        View
+                      </Link>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
-        </div>
+        </>
       )}
 
       {/* Quick Stats for when we have data */}
@@ -284,6 +417,160 @@ export default function DashboardPage() {
           color: var(--color-neutral-500);
         }
 
+        /* Charts Section */
+        .charts-section {
+          display: grid;
+          grid-template-columns: 1.5fr 1fr;
+          gap: var(--space-6);
+          margin-bottom: var(--space-6);
+        }
+
+        .chart-card {
+          padding: var(--space-6);
+        }
+
+        .chart-card.full-width {
+          margin-bottom: var(--space-6);
+        }
+
+        .card-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: var(--space-4);
+        }
+
+        .card-header-left {
+          display: flex;
+          align-items: center;
+          gap: var(--space-2);
+        }
+
+        .card-header-left h3 {
+          font-size: var(--text-lg);
+          font-weight: 600;
+        }
+
+        :global(.card-header-icon) {
+          color: var(--color-accent-500);
+        }
+
+        .card-subtitle {
+          font-size: var(--text-sm);
+          color: var(--color-neutral-500);
+        }
+
+        .chart-wrapper {
+          width: 100%;
+        }
+
+        .pie-wrapper {
+          display: flex;
+          justify-content: center;
+        }
+
+        /* Site Analytics Section */
+        .site-analytics-section {
+          margin-bottom: var(--space-6);
+        }
+
+        .section-title {
+          font-size: var(--text-lg);
+          font-weight: 600;
+          margin-bottom: var(--space-4);
+          color: var(--color-neutral-200);
+        }
+
+        .site-cards-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+          gap: var(--space-4);
+        }
+
+        .site-analytics-card {
+          padding: var(--space-5);
+        }
+
+        .site-card-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: var(--space-4);
+        }
+
+        .site-name-row {
+          display: flex;
+          align-items: center;
+          gap: var(--space-2);
+          color: var(--color-neutral-200);
+        }
+
+        .site-name-row h4 {
+          font-size: var(--text-base);
+          font-weight: 600;
+        }
+
+        .trend-badge {
+          display: flex;
+          align-items: center;
+          gap: var(--space-1);
+          padding: var(--space-1) var(--space-2);
+          border-radius: var(--radius-full);
+          font-size: var(--text-xs);
+          text-transform: capitalize;
+        }
+
+        .trend-badge.up {
+          background: rgba(239, 68, 68, 0.15);
+          color: var(--color-error-400);
+        }
+
+        .trend-badge.down {
+          background: rgba(16, 185, 129, 0.15);
+          color: var(--color-success-400);
+        }
+
+        .trend-badge.stable {
+          background: rgba(100, 116, 139, 0.15);
+          color: var(--color-neutral-400);
+        }
+
+        .site-stats {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: var(--space-3);
+          margin-bottom: var(--space-4);
+        }
+
+        .site-stat {
+          display: flex;
+          flex-direction: column;
+          gap: var(--space-1);
+        }
+
+        .stat-label {
+          font-size: var(--text-xs);
+          color: var(--color-neutral-500);
+        }
+
+        .stat-value {
+          font-size: var(--text-sm);
+          font-weight: 600;
+          color: var(--color-neutral-100);
+        }
+
+        .site-savings {
+          display: flex;
+          align-items: center;
+          gap: var(--space-2);
+          padding: var(--space-2) var(--space-3);
+          background: rgba(16, 185, 129, 0.1);
+          border-radius: var(--radius-md);
+          color: var(--color-success-400);
+          font-size: var(--text-xs);
+        }
+
+        /* Empty States */
         .empty-state-grid {
           display: grid;
           grid-template-columns: repeat(2, 1fr);
@@ -329,6 +616,7 @@ export default function DashboardPage() {
           max-width: 300px;
         }
 
+        /* Dashboard Grid */
         .dashboard-grid {
           display: grid;
           grid-template-columns: 1.5fr 1fr;
@@ -336,11 +624,8 @@ export default function DashboardPage() {
           margin-bottom: var(--space-6);
         }
 
-        .card-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: var(--space-4);
+        .recent-bills-card .card-header,
+        .alerts-card .card-header {
           padding: var(--space-4) var(--space-6) 0;
         }
 
@@ -516,6 +801,10 @@ export default function DashboardPage() {
             grid-template-columns: 1fr;
           }
 
+          .charts-section {
+            grid-template-columns: 1fr;
+          }
+
           .dashboard-grid {
             grid-template-columns: 1fr;
           }
@@ -533,6 +822,10 @@ export default function DashboardPage() {
 
           .quick-actions {
             flex-direction: column;
+          }
+
+          .site-cards-grid {
+            grid-template-columns: 1fr;
           }
         }
       `}</style>

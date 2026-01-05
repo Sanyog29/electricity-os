@@ -62,6 +62,18 @@
   --color-neutral-900: #0f172a;
   --color-neutral-950: #020617;
 
+  /* Accent - Cyan/Sky */
+  --color-accent-50: #ecfeff;
+  --color-accent-100: #cffafe;
+  --color-accent-200: #a5f3fc;
+  --color-accent-300: #67e8f9;
+  --color-accent-400: #22d3ee;
+  --color-accent-500: #0ea5e9;
+  --color-accent-600: #0284c7;
+  --color-accent-700: #0369a1;
+  --color-accent-800: #075985;
+  --color-accent-900: #0c4a6e;
+
   /* Dark Mode Specific */
   --bg-primary: #0a0e1a;
   --bg-secondary: #111827;

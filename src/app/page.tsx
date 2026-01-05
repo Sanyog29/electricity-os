@@ -7,7 +7,6 @@ import {
   TrendingUp,
   Shield,
   ArrowRight,
-  CheckCircle,
   BarChart3,
   Clock,
   IndianRupee,
@@ -24,9 +23,7 @@ export default function HomePage() {
 
   const navLinks = [
     { name: 'Features', href: '#features' },
-    { name: 'How it Works', href: '#how-it-works' },
-    { name: 'Pricing', href: '#pricing' },
-    { name: 'For Business', href: '#business' }
+    { name: 'How it Works', href: '#how-it-works' }
   ];
 
   return (
@@ -35,7 +32,6 @@ export default function HomePage() {
       <header className="landing-header">
         <div className="container-custom">
           <div className="header-content">
-            {/* Logo */}
             <div className="logo" onClick={() => window.scrollTo(0, 0)}>
               <div className="logo-icon">
                 <Zap size={18} color="white" />
@@ -43,27 +39,22 @@ export default function HomePage() {
               <span className="logo-text">Electricity Bill OS</span>
             </div>
 
-            {/* Desktop Nav */}
             <nav className="header-nav">
               {navLinks.map(link => (
                 <a key={link.name} href={link.href}>{link.name}</a>
               ))}
             </nav>
 
-            {/* Auth Actions */}
             <div className="header-actions">
-              <Link href="/login" className="auth-link">Sign in</Link>
-              <Link href="/signup" className="btn btn-primary-light">Get Started</Link>
+              <Link href="/signup" className="btn btn-primary">Get Started</Link>
             </div>
 
-            {/* Mobile Menu Button */}
             <button className="mobile-menu-btn" onClick={() => setIsMenuOpen(!isMenuOpen)}>
               {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
           </div>
         </div>
 
-        {/* Mobile Menu */}
         {isMenuOpen && (
           <div className="mobile-menu">
             {navLinks.map(link => (
@@ -72,8 +63,7 @@ export default function HomePage() {
               </a>
             ))}
             <div className="mobile-menu-auth">
-              <Link href="/login">Sign in</Link>
-              <Link href="/signup" className="btn btn-primary-light">Get Started</Link>
+              <Link href="/signup" className="btn btn-primary">Get Started</Link>
             </div>
           </div>
         )}
@@ -81,9 +71,10 @@ export default function HomePage() {
 
       {/* Hero Section */}
       <section className="hero">
+        <div className="hero-glow hero-glow-1" />
+        <div className="hero-glow hero-glow-2" />
         <div className="container-custom">
           <div className="hero-grid">
-            {/* Left Content */}
             <div className="hero-content">
               <div className="hero-badge">
                 <span className="badge-dot" />
@@ -92,7 +83,7 @@ export default function HomePage() {
 
               <h1>
                 Master Your <br />
-                <span className="text-gradient-light">Electricity Bills</span>
+                <span className="text-gradient">Electricity Bills</span>
               </h1>
 
               <p className="hero-subtitle">
@@ -100,11 +91,11 @@ export default function HomePage() {
               </p>
 
               <div className="hero-actions">
-                <Link href="/bills/upload" className="btn btn-primary-light btn-lg">
+                <Link href="/bills/upload" className="btn btn-primary btn-lg">
                   <CloudUpload size={20} />
                   Upload First Bill
                 </Link>
-                <Link href="#demo" className="btn btn-outline-light btn-lg">
+                <Link href="#demo" className="btn btn-outline btn-lg">
                   Watch Demo
                 </Link>
               </div>
@@ -112,11 +103,11 @@ export default function HomePage() {
               <div className="hero-features">
                 <div className="hero-feature">
                   <CircleCheck size={16} className="check-icon" />
-                  <span>OCR Powered</span>
+                  <span>AI Powered</span>
                 </div>
                 <div className="hero-feature">
                   <CircleCheck size={16} className="check-icon" />
-                  <span>AI Insights</span>
+                  <span>In-Depth Insights</span>
                 </div>
                 <div className="hero-feature">
                   <CircleCheck size={16} className="check-icon" />
@@ -125,7 +116,6 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Right - Dashboard Preview */}
             <div className="hero-preview">
               <div className="preview-window">
                 <div className="preview-header">
@@ -182,12 +172,11 @@ export default function HomePage() {
                   </div>
                 </div>
 
-                {/* Floating Insight */}
                 <div className="floating-insight">
                   <Sparkles size={18} className="insight-icon" />
                   <div>
                     <p className="insight-title">AI Insight Detected</p>
-                    <p className="insight-text">Potential power factor penalty risk at Site B. Check capacitors.</p>
+                    <p className="insight-text">Power factor penalty risk at Site B</p>
                   </div>
                 </div>
               </div>
@@ -324,7 +313,7 @@ export default function HomePage() {
           <div className="cta-card">
             <h2>Start saving on electricity bills today</h2>
             <p>Join hundreds of businesses who have already discovered hidden savings.</p>
-            <Link href="/signup" className="btn btn-primary-light btn-lg">
+            <Link href="/signup" className="btn btn-primary btn-lg">
               Get Started Free
               <ArrowRight size={18} />
             </Link>
@@ -372,22 +361,25 @@ export default function HomePage() {
       </footer>
 
       <style jsx>{`
-        /* Light Theme Variables */
-        :root {
-          --primary: #0ea5e9;
-          --primary-dark: #0284c7;
-          --secondary: #0f172a;
-          --accent: #eab308;
-          --bg-light: #f8fafc;
-          --text-main: #1e293b;
-          --text-muted: #64748b;
-          --success: #10b981;
+        /* Dark Theme Variables - Using Global CSS Variables */
+        .landing-page {
+          --primary: var(--color-primary-500);
+          --primary-dark: var(--color-primary-600);
+          --accent: var(--color-accent-500);
+          --accent-light: var(--color-accent-400);
+          --bg-dark: var(--bg-primary);
+          --bg-card: var(--bg-card);
+          --text-main: var(--color-neutral-50);
+          --text-muted: var(--color-neutral-400);
+          --success: var(--color-success-500);
+          --border: rgba(255, 255, 255, 0.08);
         }
 
         .landing-page {
-          font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+          font-family: var(--font-sans);
           color: var(--text-main);
-          background: white;
+          background: linear-gradient(180deg, var(--bg-primary) 0%, #0f1629 50%, var(--bg-primary) 100%);
+          min-height: 100vh;
         }
 
         .container-custom {
@@ -401,9 +393,9 @@ export default function HomePage() {
           position: sticky;
           top: 0;
           z-index: 100;
-          background: rgba(255, 255, 255, 0.9);
-          backdrop-filter: blur(12px);
-          border-bottom: 1px solid #e2e8f0;
+          background: rgba(10, 14, 26, 0.85);
+          backdrop-filter: blur(20px);
+          border-bottom: 1px solid var(--border);
         }
 
         .header-content {
@@ -423,17 +415,18 @@ export default function HomePage() {
         .logo-icon {
           width: 32px;
           height: 32px;
-          background: var(--primary);
-          border-radius: 8px;
+          background: linear-gradient(135deg, var(--color-accent-500) 0%, var(--color-primary-500) 100%);
+          border-radius: var(--radius-md);
           display: flex;
           align-items: center;
           justify-content: center;
+          box-shadow: 0 4px 12px rgba(14, 165, 233, 0.4);
         }
 
         .logo-text {
           font-size: 18px;
           font-weight: 700;
-          color: var(--secondary);
+          color: var(--text-main);
         }
 
         .header-nav {
@@ -449,7 +442,7 @@ export default function HomePage() {
         }
 
         .header-nav a:hover {
-          color: var(--primary);
+          color: var(--text-main);
         }
 
         .header-actions {
@@ -468,39 +461,38 @@ export default function HomePage() {
           color: var(--text-main);
         }
 
-        .btn-primary-light {
-          background: var(--primary);
+        .btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          font-size: 14px;
+          font-weight: 600;
+          border-radius: 10px;
+          transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+          background: linear-gradient(135deg, var(--color-accent-500) 0%, var(--color-accent-600) 100%);
           color: white;
           padding: 10px 20px;
-          border-radius: 8px;
-          font-size: 14px;
-          font-weight: 500;
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-          transition: background 0.2s, box-shadow 0.2s;
+          box-shadow: 0 4px 15px rgba(14, 165, 233, 0.35);
         }
 
-        .btn-primary-light:hover {
-          background: var(--primary-dark);
-          box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+        .btn-primary:hover {
+          box-shadow: 0 6px 25px rgba(14, 165, 233, 0.5);
+          transform: translateY(-2px);
         }
 
-        .btn-outline-light {
-          background: white;
+        .btn-outline {
+          background: rgba(255, 255, 255, 0.05);
           color: var(--text-main);
           padding: 10px 20px;
-          border-radius: 8px;
-          font-size: 14px;
-          font-weight: 500;
-          border: 1px solid #e2e8f0;
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
+          border: 1px solid var(--border);
         }
 
-        .btn-outline-light:hover {
-          background: #f8fafc;
+        .btn-outline:hover {
+          background: rgba(255, 255, 255, 0.1);
+          border-color: rgba(255, 255, 255, 0.15);
         }
 
         .btn-lg {
@@ -519,16 +511,16 @@ export default function HomePage() {
         .mobile-menu {
           display: none;
           flex-direction: column;
-          background: white;
-          border-bottom: 1px solid #e2e8f0;
+          background: rgba(10, 14, 26, 0.95);
+          border-bottom: 1px solid var(--border);
           padding: 16px 24px;
         }
 
         .mobile-menu a {
           padding: 12px 0;
           font-size: 16px;
-          color: var(--text-main);
-          border-bottom: 1px solid #f1f5f9;
+          color: var(--text-muted);
+          border-bottom: 1px solid var(--border);
         }
 
         .mobile-menu-auth {
@@ -540,8 +532,44 @@ export default function HomePage() {
 
         /* Hero */
         .hero {
-          padding: 80px 0 100px;
-          background: var(--bg-light);
+          padding: 80px 0 120px;
+          position: relative;
+          overflow: hidden;
+        }
+
+        .hero-glow {
+          position: absolute;
+          border-radius: 50%;
+          filter: blur(100px);
+          pointer-events: none;
+        }
+
+        .hero-glow-1 {
+          width: 600px;
+          height: 600px;
+          background: rgba(14, 165, 233, 0.15);
+          top: -200px;
+          right: -100px;
+          animation: floatGlow1 8s ease-in-out infinite;
+        }
+
+        .hero-glow-2 {
+          width: 400px;
+          height: 400px;
+          background: rgba(16, 185, 129, 0.1);
+          bottom: -100px;
+          left: -100px;
+          animation: floatGlow2 10s ease-in-out infinite;
+        }
+
+        @keyframes floatGlow1 {
+          0%, 100% { transform: translate(0, 0) scale(1); }
+          50% { transform: translate(-50px, 30px) scale(1.1); }
+        }
+
+        @keyframes floatGlow2 {
+          0%, 100% { transform: translate(0, 0) scale(1); }
+          50% { transform: translate(40px, -20px) scale(1.15); }
         }
 
         .hero-grid {
@@ -549,6 +577,8 @@ export default function HomePage() {
           grid-template-columns: 1fr 1fr;
           gap: 64px;
           align-items: center;
+          position: relative;
+          z-index: 1;
         }
 
         .hero-badge {
@@ -556,16 +586,44 @@ export default function HomePage() {
           align-items: center;
           gap: 8px;
           padding: 6px 16px;
-          background: rgba(14, 165, 233, 0.1);
-          border: 1px solid rgba(14, 165, 233, 0.2);
+          background: rgba(14, 165, 233, 0.15);
+          border: 1px solid rgba(14, 165, 233, 0.25);
           border-radius: 100px;
           margin-bottom: 24px;
+          animation: fadeInUp 0.6s ease-out;
+        }
+
+        .hero-content h1 {
+          animation: fadeInUp 0.6s ease-out 0.1s both;
+        }
+
+        .hero-subtitle {
+          animation: fadeInUp 0.6s ease-out 0.2s both;
+        }
+
+        .hero-actions {
+          animation: fadeInUp 0.6s ease-out 0.3s both;
+        }
+
+        .hero-features {
+          animation: fadeInUp 0.6s ease-out 0.4s both;
+        }
+
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
         }
 
         .badge-dot {
           width: 8px;
           height: 8px;
-          background: var(--primary);
+          background: var(--color-accent-500);
           border-radius: 50%;
           animation: pulse 2s infinite;
         }
@@ -580,19 +638,19 @@ export default function HomePage() {
           font-weight: 600;
           text-transform: uppercase;
           letter-spacing: 0.5px;
-          color: var(--primary-dark);
+          color: var(--color-accent-400);
         }
 
         .hero h1 {
           font-size: 56px;
           font-weight: 800;
           line-height: 1.1;
-          color: var(--secondary);
+          color: var(--text-main);
           margin-bottom: 20px;
         }
 
-        .text-gradient-light {
-          background: linear-gradient(135deg, var(--primary) 0%, #06b6d4 100%);
+        .text-gradient {
+          background: linear-gradient(135deg, var(--color-accent-500) 0%, var(--color-accent-400) 50%, var(--color-success-400) 100%);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           background-clip: text;
@@ -634,11 +692,28 @@ export default function HomePage() {
         }
 
         .preview-window {
-          background: white;
+          background: rgba(255, 255, 255, 0.03);
           border-radius: 16px;
-          box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
-          border: 1px solid #e2e8f0;
+          border: 1px solid var(--border);
           overflow: hidden;
+          box-shadow: 0 25px 80px rgba(0, 0, 0, 0.4);
+          animation: float 6s ease-in-out infinite, fadeInRight 0.8s ease-out 0.3s both;
+        }
+
+        @keyframes float {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-10px); }
+        }
+
+        @keyframes fadeInRight {
+          from {
+            opacity: 0;
+            transform: translateX(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
         }
 
         .preview-header {
@@ -646,8 +721,8 @@ export default function HomePage() {
           align-items: center;
           justify-content: space-between;
           padding: 12px 16px;
-          background: #f8fafc;
-          border-bottom: 1px solid #e2e8f0;
+          background: rgba(0, 0, 0, 0.2);
+          border-bottom: 1px solid var(--border);
         }
 
         .window-dots {
@@ -656,24 +731,24 @@ export default function HomePage() {
         }
 
         .dot {
-          width: 12px;
-          height: 12px;
+          width: 10px;
+          height: 10px;
           border-radius: 50%;
         }
 
-        .dot.red { background: rgba(248, 113, 113, 0.8); }
-        .dot.yellow { background: rgba(250, 204, 21, 0.8); }
-        .dot.green { background: rgba(74, 222, 128, 0.8); }
+        .dot.red { background: #ef4444; }
+        .dot.yellow { background: #eab308; }
+        .dot.green { background: #22c55e; }
 
         .preview-url {
           font-size: 12px;
-          color: #94a3b8;
+          color: #64748b;
         }
 
         .preview-content {
           padding: 24px;
-          background: #f8fafc;
-          min-height: 340px;
+          background: linear-gradient(180deg, rgba(15, 22, 41, 0.8) 0%, rgba(10, 14, 26, 0.9) 100%);
+          min-height: 300px;
         }
 
         .preview-top {
@@ -686,18 +761,18 @@ export default function HomePage() {
         .preview-top h3 {
           font-size: 18px;
           font-weight: 700;
-          color: var(--secondary);
+          color: var(--text-main);
         }
 
         .preview-top p {
           font-size: 12px;
-          color: #94a3b8;
+          color: #64748b;
         }
 
         .export-btn {
-          padding: 8px 16px;
-          background: white;
-          border: 1px solid #e2e8f0;
+          padding: 6px 14px;
+          background: rgba(255, 255, 255, 0.05);
+          border: 1px solid var(--border);
           border-radius: 6px;
           font-size: 12px;
           font-weight: 500;
@@ -713,10 +788,10 @@ export default function HomePage() {
         }
 
         .stat-card {
-          background: white;
+          background: rgba(255, 255, 255, 0.03);
           padding: 16px;
           border-radius: 12px;
-          border: 1px solid #e2e8f0;
+          border: 1px solid var(--border);
         }
 
         .stat-header {
@@ -736,12 +811,12 @@ export default function HomePage() {
         }
 
         .stat-icon.blue {
-          background: rgba(14, 165, 233, 0.1);
-          color: var(--primary);
+          background: rgba(52, 114, 255, 0.15);
+          color: #3472ff;
         }
 
         .stat-icon.green {
-          background: rgba(16, 185, 129, 0.1);
+          background: rgba(16, 185, 129, 0.15);
           color: var(--success);
         }
 
@@ -753,38 +828,38 @@ export default function HomePage() {
         }
 
         .stat-badge.negative {
-          background: rgba(239, 68, 68, 0.1);
-          color: #ef4444;
+          background: rgba(239, 68, 68, 0.15);
+          color: #f87171;
         }
 
         .stat-badge.positive {
-          background: rgba(16, 185, 129, 0.1);
+          background: rgba(16, 185, 129, 0.15);
           color: var(--success);
         }
 
         .stat-value {
           font-size: 24px;
           font-weight: 700;
-          color: var(--secondary);
+          color: var(--text-main);
         }
 
         .stat-value .unit {
           font-size: 14px;
           font-weight: 400;
-          color: #94a3b8;
+          color: #64748b;
         }
 
         .stat-label {
           font-size: 12px;
-          color: #94a3b8;
+          color: #64748b;
           margin-top: 4px;
         }
 
         .chart-card {
-          background: white;
+          background: rgba(255, 255, 255, 0.03);
           padding: 16px;
           border-radius: 12px;
-          border: 1px solid #e2e8f0;
+          border: 1px solid var(--border);
         }
 
         .chart-header {
@@ -794,20 +869,20 @@ export default function HomePage() {
         .chart-header h4 {
           font-size: 14px;
           font-weight: 600;
-          color: var(--secondary);
+          color: var(--text-main);
         }
 
         .mini-chart {
           display: flex;
           align-items: flex-end;
           gap: 8px;
-          height: 80px;
+          height: 60px;
         }
 
         .bar-wrapper {
           flex: 1;
           height: 100%;
-          background: #f1f5f9;
+          background: rgba(255, 255, 255, 0.05);
           border-radius: 4px;
           position: relative;
         }
@@ -816,33 +891,49 @@ export default function HomePage() {
           position: absolute;
           bottom: 0;
           width: 100%;
-          background: var(--primary);
+          background: linear-gradient(180deg, #3472ff 0%, #06b6d4 100%);
           border-radius: 4px;
-          transition: height 0.3s, background 0.2s;
+          animation: growUp 1s ease-out forwards;
+          transform-origin: bottom;
         }
 
-        .bar-wrapper:hover .bar {
-          background: var(--primary-dark);
+        @keyframes growUp {
+          from {
+            transform: scaleY(0);
+          }
+          to {
+            transform: scaleY(1);
+          }
         }
+
+        .bar-wrapper:nth-child(1) .bar { animation-delay: 0.1s; }
+        .bar-wrapper:nth-child(2) .bar { animation-delay: 0.15s; }
+        .bar-wrapper:nth-child(3) .bar { animation-delay: 0.2s; }
+        .bar-wrapper:nth-child(4) .bar { animation-delay: 0.25s; }
+        .bar-wrapper:nth-child(5) .bar { animation-delay: 0.3s; }
+        .bar-wrapper:nth-child(6) .bar { animation-delay: 0.35s; }
+        .bar-wrapper:nth-child(7) .bar { animation-delay: 0.4s; }
+        .bar-wrapper:nth-child(8) .bar { animation-delay: 0.45s; }
+        .bar-wrapper:nth-child(9) .bar { animation-delay: 0.5s; }
 
         .floating-insight {
           position: absolute;
-          bottom: -24px;
-          right: -24px;
-          background: white;
-          padding: 16px;
+          bottom: -20px;
+          right: -20px;
+          background: linear-gradient(135deg, rgba(234, 179, 8, 0.15) 0%, rgba(234, 179, 8, 0.05) 100%);
+          padding: 14px;
           border-radius: 12px;
-          box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-          border: 1px solid #e2e8f0;
-          max-width: 280px;
+          border: 1px solid rgba(234, 179, 8, 0.3);
+          max-width: 240px;
           display: flex;
-          gap: 12px;
+          gap: 10px;
           animation: bounce 2s infinite;
+          box-shadow: 0 10px 40px rgba(234, 179, 8, 0.15);
         }
 
         @keyframes bounce {
           0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-8px); }
+          50% { transform: translateY(-6px); }
         }
 
         .insight-icon {
@@ -851,21 +942,21 @@ export default function HomePage() {
         }
 
         .insight-title {
-          font-size: 14px;
+          font-size: 13px;
           font-weight: 600;
-          color: var(--secondary);
+          color: var(--accent);
         }
 
         .insight-text {
-          font-size: 12px;
+          font-size: 11px;
           color: #94a3b8;
-          margin-top: 4px;
+          margin-top: 2px;
         }
 
         /* Features */
         .features {
           padding: 100px 0;
-          background: white;
+          background: rgba(15, 22, 41, 0.5);
         }
 
         .section-header {
@@ -876,7 +967,7 @@ export default function HomePage() {
         .section-header h2 {
           font-size: 36px;
           font-weight: 700;
-          color: var(--secondary);
+          color: var(--text-main);
           margin-bottom: 16px;
         }
 
@@ -888,20 +979,22 @@ export default function HomePage() {
         .features-grid {
           display: grid;
           grid-template-columns: repeat(3, 1fr);
-          gap: 32px;
+          gap: 24px;
         }
 
         .feature-card {
-          background: white;
-          padding: 32px;
+          background: rgba(255, 255, 255, 0.02);
+          padding: 28px;
           border-radius: 16px;
-          border: 1px solid #e2e8f0;
-          transition: box-shadow 0.3s, transform 0.3s;
+          border: 1px solid var(--border);
+          transition: all 0.3s ease;
         }
 
         .feature-card:hover {
-          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+          background: rgba(255, 255, 255, 0.04);
+          border-color: rgba(52, 114, 255, 0.3);
           transform: translateY(-4px);
+          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
         }
 
         .feature-icon {
@@ -914,18 +1007,18 @@ export default function HomePage() {
           margin-bottom: 20px;
         }
 
-        .feature-icon.blue { background: rgba(14, 165, 233, 0.1); color: var(--primary); }
-        .feature-icon.green { background: rgba(16, 185, 129, 0.1); color: var(--success); }
-        .feature-icon.amber { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
-        .feature-icon.purple { background: rgba(139, 92, 246, 0.1); color: #8b5cf6; }
-        .feature-icon.pink { background: rgba(236, 72, 153, 0.1); color: #ec4899; }
-        .feature-icon.cyan { background: rgba(6, 182, 212, 0.1); color: #06b6d4; }
+        .feature-icon.blue { background: rgba(52, 114, 255, 0.15); color: #3472ff; }
+        .feature-icon.green { background: rgba(16, 185, 129, 0.15); color: var(--success); }
+        .feature-icon.amber { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+        .feature-icon.purple { background: rgba(139, 92, 246, 0.15); color: #8b5cf6; }
+        .feature-icon.pink { background: rgba(236, 72, 153, 0.15); color: #ec4899; }
+        .feature-icon.cyan { background: rgba(6, 182, 212, 0.15); color: #06b6d4; }
 
         .feature-card h3 {
           font-size: 18px;
           font-weight: 600;
-          color: var(--secondary);
-          margin-bottom: 12px;
+          color: var(--text-main);
+          margin-bottom: 10px;
         }
 
         .feature-card p {
@@ -937,7 +1030,6 @@ export default function HomePage() {
         /* How It Works */
         .how-it-works {
           padding: 100px 0;
-          background: var(--bg-light);
         }
 
         .steps-grid {
@@ -949,18 +1041,18 @@ export default function HomePage() {
 
         .step-card {
           flex: 1;
-          max-width: 300px;
+          max-width: 280px;
           text-align: center;
-          padding: 40px 32px;
-          background: white;
+          padding: 36px 28px;
+          background: rgba(255, 255, 255, 0.02);
           border-radius: 16px;
-          border: 1px solid #e2e8f0;
+          border: 1px solid var(--border);
         }
 
         .step-number {
           width: 48px;
           height: 48px;
-          background: var(--primary);
+          background: linear-gradient(135deg, #3472ff 0%, #06b6d4 100%);
           border-radius: 50%;
           display: flex;
           align-items: center;
@@ -969,13 +1061,14 @@ export default function HomePage() {
           font-weight: 700;
           color: white;
           margin: 0 auto 20px;
+          box-shadow: 0 4px 20px rgba(52, 114, 255, 0.4);
         }
 
         .step-card h3 {
           font-size: 18px;
           font-weight: 600;
-          color: var(--secondary);
-          margin-bottom: 12px;
+          color: var(--text-main);
+          margin-bottom: 10px;
         }
 
         .step-card p {
@@ -985,13 +1078,15 @@ export default function HomePage() {
         }
 
         .step-connector {
-          color: #cbd5e1;
+          color: #475569;
         }
 
         /* Stats */
         .stats-section {
           padding: 80px 0;
-          background: var(--secondary);
+          background: linear-gradient(135deg, rgba(52, 114, 255, 0.08) 0%, rgba(6, 182, 212, 0.05) 100%);
+          border-top: 1px solid var(--border);
+          border-bottom: 1px solid var(--border);
         }
 
         .stats-grid-main {
@@ -1004,33 +1099,34 @@ export default function HomePage() {
         .main-stat-value {
           font-size: 48px;
           font-weight: 800;
-          color: white;
+          background: linear-gradient(135deg, #3472ff 0%, #06b6d4 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
           margin-bottom: 8px;
         }
 
         .main-stat-label {
           font-size: 14px;
-          color: #94a3b8;
+          color: var(--text-muted);
         }
 
         /* CTA */
         .cta-section {
           padding: 100px 0;
-          background: white;
         }
 
         .cta-card {
           text-align: center;
           padding: 80px 40px;
-          background: linear-gradient(135deg, rgba(14, 165, 233, 0.05) 0%, rgba(6, 182, 212, 0.05) 100%);
-          border: 1px solid rgba(14, 165, 233, 0.1);
+          background: linear-gradient(135deg, rgba(52, 114, 255, 0.1) 0%, rgba(6, 182, 212, 0.05) 100%);
+          border: 1px solid rgba(52, 114, 255, 0.2);
           border-radius: 24px;
         }
 
         .cta-card h2 {
           font-size: 36px;
           font-weight: 700;
-          color: var(--secondary);
+          color: var(--text-main);
           margin-bottom: 16px;
         }
 
@@ -1043,8 +1139,8 @@ export default function HomePage() {
         /* Footer */
         .landing-footer {
           padding: 80px 0 40px;
-          background: var(--bg-light);
-          border-top: 1px solid #e2e8f0;
+          background: rgba(0, 0, 0, 0.3);
+          border-top: 1px solid var(--border);
         }
 
         .footer-content {
@@ -1071,7 +1167,7 @@ export default function HomePage() {
         .footer-col h4 {
           font-size: 14px;
           font-weight: 600;
-          color: var(--secondary);
+          color: var(--text-main);
           margin-bottom: 16px;
         }
 
@@ -1083,17 +1179,17 @@ export default function HomePage() {
         }
 
         .footer-col a:hover {
-          color: var(--primary);
+          color: var(--text-main);
         }
 
         .footer-bottom {
           padding-top: 32px;
-          border-top: 1px solid #e2e8f0;
+          border-top: 1px solid var(--border);
         }
 
         .footer-bottom p {
           font-size: 14px;
-          color: var(--text-muted);
+          color: #64748b;
         }
 
         /* Responsive */

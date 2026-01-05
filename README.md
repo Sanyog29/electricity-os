@@ -2,9 +2,6 @@
 
 A comprehensive electricity bill management and analysis platform built with Next.js, designed to help businesses in India understand, audit, optimize, and act on their electricity bills using AI-powered insights.
 
-![Next.js](https://img.shields.io/badge/Next.js-16-black)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)
-![Supabase](https://img.shields.io/badge/Supabase-Backend-green)
 
 ## 🚀 Features
 
